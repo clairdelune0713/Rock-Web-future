@@ -1,0 +1,14 @@
+# dependencies
+/node_modules
+
+# Next.js output
+/.next
+/out
+
+# local tooling
+.DS_Store
+*.log
+.env*.local
+
+# deployment
+.vercel
