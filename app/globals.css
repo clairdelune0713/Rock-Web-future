@@ -449,7 +449,10 @@ body.has-entered .header {
   pointer-events: none;
 }
 
-.portal-copy {
+/* ==========================================
+   1. INTRO STATE (Before Scrolling)
+   ========================================== */
+.portal-copies.is-intro .portal-copy {
   position: absolute;
   display: flex;
   width: min(920px, calc(100vw - 112px));
@@ -457,65 +460,158 @@ body.has-entered .header {
   align-items: center;
   text-align: center;
   opacity: 0;
-  transform: translate3d(0, 55px, 0) scale(0.97);
+  transform: translate3d(0, 0, 0) scale(1);
   will-change: opacity, transform;
   pointer-events: none;
 }
 
-.portal-copy.is-active {
+.portal-copies.is-intro .portal-copy.is-active {
+  opacity: 1;
   pointer-events: auto;
 }
 
-.gate-eyebrow-container {
+.portal-copies.is-intro .gate-eyebrow-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  margin-bottom: clamp(24px, 4vh, 48px);
+  margin-bottom: clamp(20px, 3vh, 36px);
   opacity: 0;
   transform: translateY(25px);
   will-change: transform, opacity;
 }
 
-.portal-copy.is-active .gate-eyebrow-container {
-  animation: elementReveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.portal-copies.is-intro .portal-copy.is-active .gate-eyebrow-container {
+  animation: elementReveal 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+.portal-copies.is-intro .char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(105%) rotate(6deg) skewY(4deg);
+  will-change: transform, opacity;
+}
+
+.portal-copies.is-intro .portal-copy.is-active .char {
+  animation: charReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.portal-copies.is-intro .gate-description {
+  opacity: 0;
+  transform: translateY(25px);
+  will-change: transform, opacity;
+}
+
+.portal-copies.is-intro .portal-copy.is-active .gate-description {
+  animation: elementReveal 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+}
+
+.portal-copies.is-intro .ritual-button {
+  opacity: 0;
+  transform: translateY(25px);
+  will-change: transform, opacity;
+}
+
+.portal-copies.is-intro .portal-copy.is-active .ritual-button {
+  animation: elementReveal 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.35s forwards;
+}
+
+
+/* ==========================================
+   2. SCROLLED STATE (Fluid Scroll-Bound Transitions)
+   ========================================== */
+.portal-copies.is-scrolled .portal-copy {
+  position: absolute;
+  display: flex;
+  width: min(920px, calc(100vw - 112px));
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  opacity: calc(1 - var(--abs-distance) * 2.2);
+  transform: scale(calc(1 - var(--abs-distance) * 0.045));
+  filter: blur(calc(var(--abs-distance) * 14px));
+  will-change: opacity, transform, filter;
+  pointer-events: none;
+  transition: filter 120ms ease-out;
+}
+
+.portal-copies.is-scrolled .portal-copy.is-active {
+  pointer-events: auto;
+}
+
+.portal-copies.is-scrolled .portal-copy .gate-eyebrow-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: clamp(20px, 3vh, 36px);
+  opacity: calc(1 - var(--abs-distance) * 3);
+  will-change: opacity;
+}
+
+.portal-copies.is-scrolled .portal-copy .split-text-title {
+  letter-spacing: calc(0.18em + var(--abs-distance) * 0.08em);
+  transition: letter-spacing 120ms ease-out;
+}
+
+.portal-copies.is-scrolled .portal-copy .char {
+  display: inline-block;
+  opacity: 1;
+  transform: none;
+}
+
+.portal-copies.is-scrolled .portal-copy .gate-description {
+  opacity: calc(1 - var(--abs-distance) * 3.5);
+  will-change: opacity;
+}
+
+.portal-copies.is-scrolled .portal-copy .ritual-button {
+  opacity: calc(1 - var(--abs-distance) * 4);
+  will-change: opacity;
+}
+
+
+/* ==========================================
+   3. TYPOGRAPHY DESIGN (Elegant & High-End)
+   ========================================== */
 .gate-number {
   margin: 0;
   padding: 0;
-  color: rgba(250, 249, 246, 0.65);
+  color: var(--accent); /* Dynamically ties to current gate color palette! */
   background: transparent;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  font-size: 10px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 600;
   line-height: 1;
-  letter-spacing: 0.32em;
+  letter-spacing: 0.38em;
   text-transform: uppercase;
+  transition: color 500ms ease;
 }
 
 .gate-jp {
-  font-family: 'Noto Serif TC', 'Playfair Display', Georgia, "Times New Roman", serif;
-  font-size: clamp(12px, 1.4vw, 14px);
+  font-family: 'Noto Serif TC', serif;
+  font-size: 12px;
   font-weight: 300;
-  font-style: italic;
-  letter-spacing: 0.18em;
-  color: rgba(250, 249, 246, 0.45);
+  letter-spacing: 0.22em;
+  color: rgba(246, 238, 223, 0.45);
+  text-transform: uppercase;
 }
 
 .split-text-title {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  margin: 0 0 clamp(16px, 3vh, 28px);
+  margin: 0 0 clamp(16px, 2.5vh, 24px);
   font-family: 'Playfair Display', 'Noto Serif TC', Georgia, "Times New Roman", serif;
   font-size: clamp(32px, 6.5vw, 84px);
-  font-weight: 300;
+  font-weight: 200;
   line-height: 1.1;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #FFC627;
-  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.45);
+  color: #dfba92; /* High-end muted champagne gold instead of pure yellow */
+  text-shadow: 
+    0 4px 20px rgba(223, 186, 146, 0.12),
+    0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .char-wrap {
@@ -527,49 +623,21 @@ body.has-entered .header {
   margin-bottom: -0.1em;
 }
 
-.char {
-  display: inline-block;
-  opacity: 0;
-  transform: translateY(105%) rotate(6deg) skewY(4deg);
-  will-change: transform, opacity;
-}
-
-.portal-copy.is-active .char {
-  animation: charReveal 0.95s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
 .split-text-title .space {
   display: inline-block;
   width: 0.25em;
 }
 
 .gate-description {
-  font-family: 'Noto Serif TC', 'Playfair Display', Georgia, "Times New Roman", serif;
-  font-size: clamp(12px, 1.1vw, 15px);
+  font-family: 'Noto Serif TC', Georgia, "Times New Roman", serif;
+  font-size: clamp(14px, 1.2vw, 16.5px); /* Slightly larger, beautiful and legible */
   font-weight: 300;
-  line-height: 1.8;
-  letter-spacing: 0.1em;
-  color: #FFC627;
-  max-w: min(640px, 90vw);
-  margin: 0 auto clamp(32px, 5vh, 60px);
-  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
-  opacity: 0;
-  transform: translateY(25px);
-  will-change: transform, opacity;
-}
-
-.portal-copy.is-active .gate-description {
-  animation: elementReveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
-}
-
-.portal-copy .ritual-button {
-  opacity: 0;
-  transform: translateY(25px);
-  will-change: transform, opacity;
-}
-
-.portal-copy.is-active .ritual-button {
-  animation: elementReveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+  line-height: 1.85;
+  letter-spacing: 0.08em;
+  color: rgba(246, 238, 223, 0.78); /* High-end soft cream for readability */
+  max-width: 580px; /* Elegant print-like narrow block */
+  margin: 0 auto clamp(32px, 5vh, 48px);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
 }
 
 @keyframes charReveal {

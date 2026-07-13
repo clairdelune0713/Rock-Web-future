@@ -80,6 +80,9 @@ export default function FantasyExperience() {
   const audioContextRef = useRef(null);
   const ambientGainRef = useRef(null);
   const videosRef = useRef([]);
+  const padFilterRef = useRef(null);
+  const melodyTimerRef = useRef(null);
+  const soundOnRef = useRef(false);
 
   const videoUrls = [
     "https://video.henrywithu.com/static/streaming-playlists/hls/896cd5b6-7fa0-4572-82f4-e1db152d551a/c9cfe856-61ee-47cd-b013-5083425c188e-1080-fragmented.mp4",
@@ -96,6 +99,7 @@ export default function FantasyExperience() {
   const [loaderVisible, setLoaderVisible] = useState(true);
   const [ready, setReady] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
 
   const prefersReducedMotion = useCallback(
     () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
@@ -116,19 +120,28 @@ export default function FantasyExperience() {
       sceneFloatRef.current = scene;
       setActiveScene((current) => (current === active ? current : active));
 
+      if (window.scrollY > 4) {
+        setScrolled((already) => {
+          if (!already) return true;
+          return already;
+        });
+      }
+
       portalCopies.forEach((copy, index) => {
         const distance = scene - index;
-        const opacity = clamp(1 - Math.abs(distance) * 1.8);
-        const translate = distance * -76;
-        const scale = 1 - Math.min(Math.abs(distance), 1) * 0.045;
-        copy.style.opacity = opacity.toFixed(3);
-        copy.style.transform = `translate3d(0, ${translate}px, 0) scale(${scale})`;
+        copy.style.setProperty("--distance", distance.toFixed(4));
+        copy.style.setProperty("--abs-distance", Math.abs(distance).toFixed(4));
         copy.classList.toggle("is-active", index === active);
         copy.setAttribute("aria-hidden", index === active ? "false" : "true");
       });
       railButtons.forEach((button, index) => button.classList.toggle("is-active", index === active));
       if (prompt) {
         prompt.style.opacity = String(clamp(1 - scene * 1.3));
+      }
+
+      if (padFilterRef.current && audioContextRef.current && audioContextRef.current.state === "running") {
+        const targetFreq = 160 + scene * 110;
+        padFilterRef.current.frequency.setTargetAtTime(targetFreq, audioContextRef.current.currentTime, 0.1);
       }
 
       const lower = Math.min(Math.floor(scene), palettes.length - 1);
@@ -219,12 +232,15 @@ export default function FantasyExperience() {
   useEffect(() => {
     const startedAt = performance.now();
     const timer = window.setInterval(() => {
-      const ceiling = imageReadyRef.current ? 100 : 92;
+      const vid0 = videosRef.current && videosRef.current[0];
+      const videoReady = vid0 ? (vid0.readyState >= 2) : false; // HAVE_CURRENT_DATA is 2
+      
+      const ceiling = (imageReadyRef.current && videoReady) ? 100 : 92;
       progressRef.current += Math.max(0.45, (ceiling - progressRef.current) * 0.08);
       progressRef.current = Math.min(progressRef.current, ceiling);
       const rounded = Math.round(progressRef.current);
       setLoadingProgress(rounded);
-      if (imageReadyRef.current && rounded >= 100 && performance.now() - startedAt > 800) {
+      if (imageReadyRef.current && videoReady && rounded >= 100 && performance.now() - startedAt > 800) {
         window.clearInterval(timer);
         setReady(true);
       }
@@ -242,6 +258,7 @@ export default function FantasyExperience() {
     ambientGain.gain.value = 0;
     ambientGain.connect(audioContext.destination);
 
+    // 1. Subtle whisper-wind noise background buffer
     const seconds = 3;
     const buffer = audioContext.createBuffer(1, audioContext.sampleRate * seconds, audioContext.sampleRate);
     const data = buffer.getChannelData(0);
@@ -253,22 +270,113 @@ export default function FantasyExperience() {
     }
 
     const wind = audioContext.createBufferSource();
-    const filter = audioContext.createBiquadFilter();
-    filter.type = "lowpass";
-    filter.frequency.value = 520;
-    filter.Q.value = 0.7;
+    const windFilter = audioContext.createBiquadFilter();
+    const windGain = audioContext.createGain();
+    
+    windFilter.type = "lowpass";
+    windFilter.frequency.value = 400; // soft and muffled
+    windFilter.Q.value = 0.5;
+    
+    windGain.gain.value = 0.025; // extremely subtle atmospheric bed
+    
     wind.buffer = buffer;
     wind.loop = true;
-    wind.connect(filter).connect(ambientGain);
+    wind.connect(windFilter).connect(windGain).connect(ambientGain);
     wind.start();
 
-    const drone = audioContext.createOscillator();
-    const droneGain = audioContext.createGain();
-    drone.type = "sine";
-    drone.frequency.value = 47;
-    droneGain.gain.value = 0.16;
-    drone.connect(droneGain).connect(ambientGain);
-    drone.start();
+    // 2. High-end, multi-layered warm analog Pad drone (C minor triad / pentatonic support)
+    const drones = [
+      { type: "triangle", freq: 65.41, vol: 0.22 }, // C2 (Warm, foundational bass root)
+      { type: "triangle", freq: 77.78, vol: 0.16 }, // Eb2 (Soft, cinematic minor third)
+      { type: "sawtooth", freq: 97.99, vol: 0.08 }  // G2 (Slightly textured perfect fifth)
+    ];
+
+    const padFilter = audioContext.createBiquadFilter();
+    padFilter.type = "lowpass";
+    padFilter.frequency.value = 160; // starts dark, opens up as user scrolls
+    padFilter.Q.value = 1.3;
+    padFilter.connect(ambientGain);
+    padFilterRef.current = padFilter;
+
+    drones.forEach((d) => {
+      const osc = audioContext.createOscillator();
+      const oscGain = audioContext.createGain();
+      osc.type = d.type;
+      osc.frequency.value = d.freq;
+      oscGain.gain.value = d.vol;
+      
+      osc.connect(oscGain).connect(padFilter);
+      osc.start();
+    });
+
+    // 3. Floating, spacey delay/echo line for the melody
+    const delay = audioContext.createDelay(1.0);
+    const delayFeedback = audioContext.createGain();
+    const delayFilter = audioContext.createBiquadFilter();
+    
+    delay.delayTime.value = 0.45; // 450ms sweet delay
+    delayFeedback.gain.value = 0.42; // subtle multi-tap decaying feedback
+    delayFilter.type = "lowpass";
+    delayFilter.frequency.value = 750; // softens the delay taps
+    
+    delay.connect(delayFilter);
+    delayFilter.connect(delayFeedback);
+    delayFeedback.connect(delay);
+    delay.connect(ambientGain); // feed delay back into main stream
+
+    // Dedicated filter for dry melody notes to make them sound rounded and soft
+    const melodyFilter = audioContext.createBiquadFilter();
+    melodyFilter.type = "lowpass";
+    melodyFilter.frequency.value = 850;
+    melodyFilter.connect(ambientGain);
+
+    // 4. Randomized, infinite pentatonic note generator
+    if (!melodyTimerRef.current) {
+      const scale = [130.81, 155.56, 174.61, 196.00, 233.08, 261.63, 311.13, 349.23, 392.00, 466.16];
+      
+      const playNextNote = () => {
+        const currentCtx = audioContextRef.current;
+        if (!currentCtx) return;
+        
+        // If the context is suspended or sound is off, retry in a bit without scheduling notes
+        if (currentCtx.state === "suspended" || !soundOnRef.current) {
+          melodyTimerRef.current = setTimeout(playNextNote, 1000);
+          return;
+        }
+
+        // Pick a random frequency from the Eb Maj / C minor pentatonic scale
+        const freq = scale[Math.floor(Math.random() * scale.length)];
+        
+        const noteOsc = currentCtx.createOscillator();
+        const noteGain = currentCtx.createGain();
+        
+        noteOsc.type = "triangle"; // smooth organic tone
+        noteOsc.frequency.value = freq;
+        
+        const now = currentCtx.currentTime;
+        noteGain.gain.setValueAtTime(0, now);
+        // Tender, breathing attack envelope
+        noteGain.gain.linearRampToValueAtTime(0.09, now + 0.6);
+        // Exponential fade-out for realistic string-like ring decay
+        noteGain.gain.exponentialRampToValueAtTime(0.001, now + 3.2);
+        
+        noteOsc.connect(noteGain);
+        
+        // Route dry signal to melody filter and wet signal to echo line
+        noteGain.connect(melodyFilter);
+        noteGain.connect(delay);
+        
+        noteOsc.start(now);
+        noteOsc.stop(now + 3.5);
+        
+        // Random note gaps to make the track breathe like a real musician (between 2.2s and 3.8s)
+        const nextGap = 2200 + Math.random() * 1600;
+        melodyTimerRef.current = setTimeout(playNextNote, nextGap);
+      };
+
+      // Initial note delay so it doesn't blast immediately
+      melodyTimerRef.current = setTimeout(playNextNote, 1200);
+    }
 
     audioContextRef.current = audioContext;
     ambientGainRef.current = ambientGain;
@@ -280,9 +388,12 @@ export default function FantasyExperience() {
       const audioContext = audioContextRef.current;
       const ambientGain = ambientGainRef.current;
       if (!audioContext || !ambientGain) return;
+      
       if (audioContext.state === "suspended") await audioContext.resume();
+      
+      soundOnRef.current = enabled;
       ambientGain.gain.cancelScheduledValues(audioContext.currentTime);
-      ambientGain.gain.linearRampToValueAtTime(enabled ? 0.09 : 0, audioContext.currentTime + 0.45);
+      ambientGain.gain.linearRampToValueAtTime(enabled ? 0.45 : 0, audioContext.currentTime + 0.65);
       setSoundOn(enabled);
     },
     [createAmbientSound],
@@ -291,6 +402,9 @@ export default function FantasyExperience() {
   useEffect(
     () => () => {
       audioContextRef.current?.close();
+      if (melodyTimerRef.current) {
+        clearTimeout(melodyTimerRef.current);
+      }
     },
     [],
   );
@@ -429,7 +543,7 @@ export default function FantasyExperience() {
               ))}
             </nav>
 
-            <div className="portal-copies" aria-live="polite">
+            <div className={`portal-copies ${scrolled ? "is-scrolled" : "is-intro"}`} aria-live="polite">
               {gates.map((gate, index) => (
                 <article
                   className={`portal-copy${index === activeScene ? " is-active" : ""}`}
