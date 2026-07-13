@@ -151,7 +151,6 @@ export default function FantasyExperience() {
           stage: stageRef.current,
           image,
           videos,
-          shards: [...rootRef.current.querySelectorAll(".shard")],
           getPointer: () => pointerRef.current,
           getScene: () => sceneFloatRef.current,
           prefersReducedMotion: prefersReducedMotion(),
@@ -375,11 +374,7 @@ export default function FantasyExperience() {
             <div className="stage__wash" aria-hidden="true" />
             <div className="grain" aria-hidden="true" />
 
-            <div className="shards" aria-hidden="true">
-              {[1.25, 0.85, 1.8, 1.05, 1.55, 0.7, 1.35].map((depth, index) => (
-                <i className={`shard shard--${index + 1}`} data-depth={depth} key={depth} />
-              ))}
-            </div>
+
 
             <nav className="gate-rail" aria-label="Gate navigation">
               <span className="gate-rail__line" aria-hidden="true" />
