@@ -44,6 +44,7 @@ export default function FantasyExperience() {
   const progressRef = useRef(0);
   const audioContextRef = useRef(null);
   const ambientGainRef = useRef(null);
+  const videoRef = useRef(null);
 
   const [activeScene, setActiveScene] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -120,6 +121,16 @@ export default function FantasyExperience() {
     let disposeWebGL = () => {};
     image.decoding = "async";
     image.src = "/assets/mythic-portal.png";
+
+    const video = document.createElement("video");
+    video.src = "https://video.henrywithu.com/static/streaming-playlists/hls/896cd5b6-7fa0-4572-82f4-e1db152d551a/c9cfe856-61ee-47cd-b013-5083425c188e-1080-fragmented.mp4";
+    video.crossOrigin = "anonymous";
+    video.loop = true;
+    video.muted = true;
+    video.playsInline = true;
+    video.autoplay = true;
+    videoRef.current = video;
+
     image.addEventListener(
       "load",
       () => {
@@ -128,6 +139,7 @@ export default function FantasyExperience() {
           canvas: canvasRef.current,
           stage: stageRef.current,
           image,
+          video,
           shards: [...rootRef.current.querySelectorAll(".shard")],
           getPointer: () => pointerRef.current,
           getScene: () => sceneFloatRef.current,
@@ -144,7 +156,14 @@ export default function FantasyExperience() {
       },
       { once: true },
     );
-    return () => disposeWebGL();
+    return () => {
+      disposeWebGL();
+      if (video) {
+        video.pause();
+        video.src = "";
+        video.load();
+      }
+    };
   }, [prefersReducedMotion]);
 
   useEffect(() => {
@@ -251,6 +270,9 @@ export default function FantasyExperience() {
     document.body.classList.remove("is-loading");
     document.body.classList.add("has-entered");
     await setSoundEnabled(true);
+    if (videoRef.current) {
+      videoRef.current.play().catch((err) => console.warn("Video play failed:", err));
+    }
     window.setTimeout(() => setLoaderVisible(false), 1100);
   }
 
