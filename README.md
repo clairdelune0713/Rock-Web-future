@@ -1,4 +1,4 @@
-# Northwind
+# AIFX
 
 An original Next.js microsite inspired by the interaction language of cinematic graphic-novel websites: a loading ritual, full-screen WebGL scene, five scroll-driven gates, pointer parallax, floating depth layers, animated navigation, and procedural ambient sound.
 

@@ -1,7 +1,7 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Northwind — Beyond the Five Gates",
+  title: "AIFX — Beyond the Five Gates",
   description: "An original scroll-driven fantasy portal experience.",
 };
 

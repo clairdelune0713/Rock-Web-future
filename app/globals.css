@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200;300;400;500;600&family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300&family=Inter:wght@300;400;500;600&display=swap');
+
 :root {
   color-scheme: dark;
   --ink: #160f0b;
@@ -389,11 +391,10 @@ body.has-entered .header {
 }
 
 .stage__wash {
-  display: none;
+  display: block;
   z-index: 2;
-  background: var(--wash);
-  mix-blend-mode: soft-light;
-  transition: background-color 500ms linear;
+  background: radial-gradient(circle at center, rgba(15, 15, 15, 0.25) 0%, rgba(8, 8, 8, 0.6) 100%),
+              linear-gradient(to bottom, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.55) 100%);
   pointer-events: none;
 }
 
@@ -463,70 +464,161 @@ body.has-entered .header {
   pointer-events: auto;
 }
 
+.gate-eyebrow-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: clamp(24px, 4vh, 48px);
+  opacity: 0;
+  transform: translateY(25px);
+  will-change: transform, opacity;
+}
+
+.portal-copy.is-active .gate-eyebrow-container {
+  animation: elementReveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 .gate-number {
-  margin: 0 0 clamp(35px, 6.5vh, 68px);
-  padding: 7px 10px 6px;
-  color: var(--ink);
-  background: var(--cream);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  color: rgba(250, 249, 246, 0.65);
+  background: transparent;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.32em;
   text-transform: uppercase;
 }
 
-.portal-copy h2 {
-  margin: 0 0 clamp(62px, 11vh, 112px);
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: clamp(42px, 7vw, 100px);
+.gate-jp {
+  font-family: 'Noto Serif TC', 'Playfair Display', Georgia, "Times New Roman", serif;
+  font-size: clamp(12px, 1.4vw, 14px);
   font-weight: 300;
-  line-height: 0.92;
-  letter-spacing: 0.035em;
+  font-style: italic;
+  letter-spacing: 0.18em;
+  color: rgba(250, 249, 246, 0.45);
+}
+
+.split-text-title {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0 0 clamp(16px, 3vh, 28px);
+  font-family: 'Playfair Display', 'Noto Serif TC', Georgia, "Times New Roman", serif;
+  font-size: clamp(32px, 6.5vw, 84px);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  text-shadow: 0 2px 22px rgba(17, 8, 4, 0.3);
+  color: #FAF9F6;
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.45);
+}
+
+.char-wrap {
+  display: inline-block;
+  overflow: hidden;
+  padding-top: 0.1em;
+  padding-bottom: 0.1em;
+  margin-top: -0.1em;
+  margin-bottom: -0.1em;
+}
+
+.char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(105%) rotate(6deg) skewY(4deg);
+  will-change: transform, opacity;
+}
+
+.portal-copy.is-active .char {
+  animation: charReveal 0.95s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.split-text-title .space {
+  display: inline-block;
+  width: 0.25em;
+}
+
+.gate-description {
+  font-family: 'Noto Serif TC', 'Playfair Display', Georgia, "Times New Roman", serif;
+  font-size: clamp(12px, 1.1vw, 15px);
+  font-weight: 300;
+  line-height: 1.8;
+  letter-spacing: 0.1em;
+  color: rgba(250, 249, 246, 0.75);
+  max-w: min(640px, 90vw);
+  margin: 0 auto clamp(32px, 5vh, 60px);
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transform: translateY(25px);
+  will-change: transform, opacity;
+}
+
+.portal-copy.is-active .gate-description {
+  animation: elementReveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+}
+
+.portal-copy .ritual-button {
+  opacity: 0;
+  transform: translateY(25px);
+  will-change: transform, opacity;
+}
+
+.portal-copy.is-active .ritual-button {
+  animation: elementReveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+}
+
+@keyframes charReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0%) rotate(0deg) skewY(0deg);
+  }
+}
+
+@keyframes elementReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .ritual-button {
   position: relative;
   display: inline-flex;
   min-width: 214px;
-  min-height: 56px;
+  min-height: 52px;
   align-items: center;
   justify-content: center;
-  padding: 17px 26px;
-  border: 0;
-  color: var(--cream);
-  background: var(--ink);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.09em;
+  padding: 13px 36px;
+  border: 1px solid rgba(250, 249, 246, 0.22);
+  border-radius: 9999px;
+  color: #FAF9F6;
+  background: rgba(250, 249, 246, 0.08);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: color 240ms ease, background-color 240ms ease, transform 240ms ease;
+  transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ritual-button::before,
 .ritual-button::after {
-  content: "◇";
-  position: absolute;
-  top: 50%;
-  color: currentColor;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 18px;
-  font-weight: 300;
-  transform: translateY(-52%);
+  display: none !important;
 }
-
-.ritual-button::before { left: -21px; }
-.ritual-button::after { right: -21px; }
 
 .ritual-button:hover,
 .ritual-button:focus-visible {
-  color: var(--ink);
-  background: var(--cream);
-  transform: translateY(-3px);
+  color: #111111;
+  background: #FAF9F6;
+  border-color: #FAF9F6;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
 .ritual-button:disabled {

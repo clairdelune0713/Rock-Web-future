@@ -12,11 +12,46 @@ const palettes = [
 ];
 
 const gates = [
-  { number: "01", title: "The Realm", action: "Cross into the realm", id: "realm" },
-  { number: "02", title: "Chronicles", action: "Open the chronicles", id: "chronicles" },
-  { number: "03", title: "Wayfarers", action: "Meet the wayfarers", id: "wayfarers" },
-  { number: "04", title: "Makers", action: "Enter the workshop", id: "makers" },
-  { number: "05", title: "The Circle", action: "Join the circle", id: "circle" },
+  {
+    number: "01",
+    title: "The Realm",
+    jpTitle: "1-5  領域・風土",
+    description: "Walk the wind-cut kingdoms and explore our high-fidelity digital terrains beyond the first gate.",
+    action: "Cross into the realm",
+    id: "realm"
+  },
+  {
+    number: "02",
+    title: "Chronicles",
+    jpTitle: "2-5  石碑・年代記",
+    description: "Discover deep cinematic lore and stories carried in ancient stone, salt, and neural starlight.",
+    action: "Open the chronicles",
+    id: "chronicles"
+  },
+  {
+    number: "03",
+    title: "Wayfarers",
+    jpTitle: "3-5  旅人・群像",
+    description: "Meet the unique figures, virtual actors, and lifelike characters whose choices shaped the passage.",
+    action: "Meet the wayfarers",
+    id: "wayfarers"
+  },
+  {
+    number: "04",
+    title: "Makers",
+    jpTitle: "4-5  工房・創作者",
+    description: "Discover the procedural crafts, mechanical designs, and AI-driven workshop behind our digital sagas.",
+    action: "Enter the workshop",
+    id: "makers"
+  },
+  {
+    number: "05",
+    title: "The Circle",
+    jpTitle: "5-5  円環・共同体",
+    description: "Enter a high-end digital gathering place built for global readers, wanderers, and dreamers.",
+    action: "Join the circle",
+    id: "circle"
+  },
 ];
 
 const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
@@ -300,7 +335,7 @@ export default function FantasyExperience() {
           <div className="loader__art" aria-hidden="true" />
           <div className="loader__content">
             <p className="loader__credit">AN ORIGINAL DIGITAL SAGA</p>
-            <h1 className="loader__title" aria-label="Northwind">NORTHWIND</h1>
+            <h1 className="loader__title" aria-label="AIFX">AIFX</h1>
             <p className="loader__studio">BEYOND THE FIVE GATES</p>
             <div className="loader__meter" aria-hidden="true">
               <span className="loader__progress" style={{ width: `${loadingProgress}%` }} />
@@ -330,10 +365,10 @@ export default function FantasyExperience() {
         <a
           className="wordmark"
           href="#gate-1"
-          aria-label="Northwind home"
+          aria-label="AIFX home"
           onClick={(event) => { event.preventDefault(); scrollToGate(0); }}
         >
-          NORTHWIND
+          AIFX
         </a>
 
         <button
@@ -400,8 +435,29 @@ export default function FantasyExperience() {
                   aria-hidden={index !== activeScene}
                   key={gate.id}
                 >
-                  <p className="gate-number">Gate {gate.number}</p>
-                  <h2>{gate.title}</h2>
+                  <div className="gate-eyebrow-container">
+                    <p className="gate-number">Gate {gate.number}</p>
+                    <span className="gate-jp">{gate.jpTitle}</span>
+                  </div>
+                  <h2 className="split-text-title">
+                    {gate.title.split("").map((char, charIdx) => {
+                      if (char === " ") {
+                        return (
+                          <span key={charIdx} className="space">
+                            &nbsp;
+                          </span>
+                        );
+                      }
+                      return (
+                        <span key={charIdx} className="char-wrap">
+                          <span className="char" style={{ animationDelay: `${charIdx * 0.025}s` }}>
+                            {char}
+                          </span>
+                        </span>
+                      );
+                    })}
+                  </h2>
+                  <p className="gate-description">{gate.description}</p>
                   <a className="ritual-button" href={`#${gate.id}`}><span>{gate.action}</span></a>
                 </article>
               ))}
