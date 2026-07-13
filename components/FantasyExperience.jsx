@@ -104,11 +104,12 @@ export default function FantasyExperience() {
 
   useEffect(() => {
     const root = rootRef.current;
-    const portalCopies = [...root.querySelectorAll(".portal-copy")];
-    const railButtons = [...root.querySelectorAll(".gate-rail button")];
-    const prompt = root.querySelector(".scroll-prompt");
 
     function updateScene() {
+      const portalCopies = [...root.querySelectorAll(".portal-copy")];
+      const railButtons = [...root.querySelectorAll(".gate-rail button")];
+      const prompt = root.querySelector(".scroll-prompt");
+
       const viewport = Math.max(window.innerHeight, 1);
       const scene = clamp(window.scrollY / viewport, 0, 4);
       const active = Math.round(scene);
@@ -126,11 +127,13 @@ export default function FantasyExperience() {
         copy.setAttribute("aria-hidden", index === active ? "false" : "true");
       });
       railButtons.forEach((button, index) => button.classList.toggle("is-active", index === active));
-      prompt.style.opacity = String(clamp(1 - scene * 1.3));
+      if (prompt) {
+        prompt.style.opacity = String(clamp(1 - scene * 1.3));
+      }
 
-      const lower = Math.floor(scene);
+      const lower = Math.min(Math.floor(scene), palettes.length - 1);
       const upper = Math.min(lower + 1, palettes.length - 1);
-      const local = scene - lower;
+      const local = scene - Math.floor(scene);
       document.documentElement.style.setProperty(
         "--accent",
         mixHex(palettes[lower].accent, palettes[upper].accent, local),
