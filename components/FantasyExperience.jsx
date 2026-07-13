@@ -44,7 +44,15 @@ export default function FantasyExperience() {
   const progressRef = useRef(0);
   const audioContextRef = useRef(null);
   const ambientGainRef = useRef(null);
-  const videoRef = useRef(null);
+  const videosRef = useRef([]);
+
+  const videoUrls = [
+    "https://video.henrywithu.com/static/streaming-playlists/hls/896cd5b6-7fa0-4572-82f4-e1db152d551a/c9cfe856-61ee-47cd-b013-5083425c188e-1080-fragmented.mp4",
+    "https://video.henrywithu.com/static/streaming-playlists/hls/29f2ce85-ad8e-410a-a58d-b3ed37b889f4/7280e8b3-a01b-4fd4-80ac-07728d10d80b-1080-fragmented.mp4",
+    "https://video.henrywithu.com/static/streaming-playlists/hls/0bf2716c-1906-44b5-9ea8-e2e896fad215/00d4b62b-64fa-4fc9-84fe-1f7211b9cad8-1080-fragmented.mp4",
+    "https://video.henrywithu.com/static/streaming-playlists/hls/a8f069de-7cb5-433f-927f-7f589a525afa/5b36ebc1-4e1f-486d-9893-bc1d81d1960e-1080-fragmented.mp4",
+    "https://video.henrywithu.com/static/streaming-playlists/hls/00385dfd-6549-4d12-9e9e-ae59d6da6bdc/a56317f4-84a0-4580-bdc5-8718d49bff49-1080-fragmented.mp4"
+  ];
 
   const [activeScene, setActiveScene] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -122,14 +130,17 @@ export default function FantasyExperience() {
     image.decoding = "async";
     image.src = "/assets/mythic-portal.png";
 
-    const video = document.createElement("video");
-    video.src = "https://video.henrywithu.com/static/streaming-playlists/hls/896cd5b6-7fa0-4572-82f4-e1db152d551a/c9cfe856-61ee-47cd-b013-5083425c188e-1080-fragmented.mp4";
-    video.crossOrigin = "anonymous";
-    video.loop = true;
-    video.muted = true;
-    video.playsInline = true;
-    video.autoplay = true;
-    videoRef.current = video;
+    const videos = videoUrls.map((url) => {
+      const video = document.createElement("video");
+      video.src = url;
+      video.crossOrigin = "anonymous";
+      video.loop = true;
+      video.muted = true;
+      video.playsInline = true;
+      video.autoplay = true;
+      return video;
+    });
+    videosRef.current = videos;
 
     image.addEventListener(
       "load",
@@ -139,7 +150,7 @@ export default function FantasyExperience() {
           canvas: canvasRef.current,
           stage: stageRef.current,
           image,
-          video,
+          videos,
           shards: [...rootRef.current.querySelectorAll(".shard")],
           getPointer: () => pointerRef.current,
           getScene: () => sceneFloatRef.current,
@@ -158,11 +169,13 @@ export default function FantasyExperience() {
     );
     return () => {
       disposeWebGL();
-      if (video) {
-        video.pause();
-        video.src = "";
-        video.load();
-      }
+      videos.forEach((video) => {
+        if (video) {
+          video.pause();
+          video.src = "";
+          video.load();
+        }
+      });
     };
   }, [prefersReducedMotion]);
 
@@ -270,8 +283,8 @@ export default function FantasyExperience() {
     document.body.classList.remove("is-loading");
     document.body.classList.add("has-entered");
     await setSoundEnabled(true);
-    if (videoRef.current) {
-      videoRef.current.play().catch((err) => console.warn("Video play failed:", err));
+    if (videosRef.current && videosRef.current[0]) {
+      videosRef.current[0].play().catch((err) => console.warn("Video play failed:", err));
     }
     window.setTimeout(() => setLoaderVisible(false), 1100);
   }
