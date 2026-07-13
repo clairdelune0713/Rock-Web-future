@@ -447,6 +447,7 @@ body.has-entered .header {
   place-items: center;
   padding: 105px 28px 115px;
   pointer-events: none;
+  perspective: 1200px; /* Activates physical 3D depth in scroll transitions! */
 }
 
 /* ==========================================
@@ -518,7 +519,7 @@ body.has-entered .header {
 
 
 /* ==========================================
-   2. SCROLLED STATE (Class-Driven Transitions)
+   2. SCROLLED STATE (Luxury 3D & Staggered Transitions)
    ========================================== */
 .portal-copies.is-scrolled .portal-copy {
   position: absolute;
@@ -528,27 +529,32 @@ body.has-entered .header {
   align-items: center;
   text-align: center;
   
-  /* Transitional baseline */
+  /* Transitional baseline - drift into the deep Z-axis, blur, and dissolve */
   opacity: 0;
-  filter: blur(14px);
-  transform: scale(0.955);
+  filter: blur(20px);
+  transform: translate3d(0, 0, -80px) scale(0.94);
   pointer-events: none;
   
-  /* Smooth hardware-accelerated curves */
+  /* Premium hydraulic deceleration curve */
   transition: 
-    opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-    filter 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: opacity, transform, filter;
 }
 
 .portal-copies.is-scrolled .portal-copy.is-active {
   opacity: 1;
   filter: blur(0px);
-  transform: scale(1);
+  transform: translate3d(0, 0, 0) scale(1);
   pointer-events: auto;
+  transition: 
+    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* 1. Staggered reveal for eyebrow (subpage index number) */
 .portal-copies.is-scrolled .portal-copy .gate-eyebrow-container {
   display: flex;
   flex-direction: column;
@@ -556,26 +562,27 @@ body.has-entered .header {
   gap: 12px;
   margin-bottom: clamp(20px, 3vh, 36px);
   opacity: 0;
-  transform: translateY(10px);
+  transform: translate3d(0, 15px, 0);
   transition: 
-    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.05s,
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.05s;
   will-change: opacity, transform;
 }
 
 .portal-copies.is-scrolled .portal-copy.is-active .gate-eyebrow-container {
   opacity: 1;
-  transform: translateY(0);
+  transform: translate3d(0, 0, 0);
 }
 
+/* 2. Slow atmospheric letter spacing collapse for title */
 .portal-copies.is-scrolled .portal-copy .split-text-title {
-  letter-spacing: 0.26em; /* Elegant wider tracking when inactive */
-  transition: letter-spacing 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  letter-spacing: 0.28em; /* expands on inactive */
+  transition: letter-spacing 1.0s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: letter-spacing;
 }
 
 .portal-copies.is-scrolled .portal-copy.is-active .split-text-title {
-  letter-spacing: 0.18em; /* Gathers beautifully together on active */
+  letter-spacing: 0.18em; /* tightens on active */
 }
 
 .portal-copies.is-scrolled .portal-copy .char {
@@ -584,32 +591,34 @@ body.has-entered .header {
   transform: none;
 }
 
+/* 3. Sweeping reveal for description copy (0.16s delay) */
 .portal-copies.is-scrolled .portal-copy .gate-description {
   opacity: 0;
-  transform: scale(0.985);
+  transform: translate3d(0, 18px, 0);
   transition: 
-    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.16s,
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.16s;
   will-change: opacity, transform;
 }
 
 .portal-copies.is-scrolled .portal-copy.is-active .gate-description {
   opacity: 0.78;
-  transform: scale(1);
+  transform: translate3d(0, 0, 0);
 }
 
+/* 4. Sweeping reveal for call-to-action button (0.32s delay) */
 .portal-copies.is-scrolled .portal-copy .ritual-button {
   opacity: 0;
-  transform: scale(0.975);
+  transform: translate3d(0, 22px, 0);
   transition: 
-    opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.32s,
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.32s;
   will-change: opacity, transform;
 }
 
 .portal-copies.is-scrolled .portal-copy.is-active .ritual-button {
   opacity: 1;
-  transform: scale(1);
+  transform: translate3d(0, 0, 0);
 }
 
 

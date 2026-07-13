@@ -284,11 +284,12 @@ export default function FantasyExperience() {
     wind.connect(windFilter).connect(windGain).connect(ambientGain);
     wind.start();
 
-    // 2. High-end, multi-layered warm analog Pad drone (C minor triad / pentatonic support)
+    // 2. High-end, multi-layered warm analog Pad drone (C Major Triad + high celestial shimmer)
     const drones = [
-      { type: "triangle", freq: 65.41, vol: 0.22 }, // C2 (Warm, foundational bass root)
-      { type: "triangle", freq: 77.78, vol: 0.16 }, // Eb2 (Soft, cinematic minor third)
-      { type: "sawtooth", freq: 97.99, vol: 0.08 }  // G2 (Slightly textured perfect fifth)
+      { type: "triangle", freq: 65.41, vol: 0.20 }, // C2 (Warm, foundational bass root)
+      { type: "triangle", freq: 82.41, vol: 0.15 }, // E2 (Beautiful, comforting major third)
+      { type: "triangle", freq: 97.99, vol: 0.12 }, // G2 (Serene perfect fifth)
+      { type: "sine", freq: 196.00, vol: 0.05 }    // G3 (High airy octave-fifth shimmer)
     ];
 
     const padFilter = audioContext.createBiquadFilter();
@@ -332,7 +333,7 @@ export default function FantasyExperience() {
 
     // 4. Randomized, infinite pentatonic note generator
     if (!melodyTimerRef.current) {
-      const scale = [130.81, 155.56, 174.61, 196.00, 233.08, 261.63, 311.13, 349.23, 392.00, 466.16];
+      const scale = [130.81, 146.83, 164.81, 196.00, 220.00, 261.63, 293.66, 329.63, 392.00, 440.00];
       
       const playNextNote = () => {
         const currentCtx = audioContextRef.current;
