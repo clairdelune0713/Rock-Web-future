@@ -518,7 +518,7 @@ body.has-entered .header {
 
 
 /* ==========================================
-   2. SCROLLED STATE (Fluid Scroll-Bound Transitions)
+   2. SCROLLED STATE (Class-Driven Transitions)
    ========================================== */
 .portal-copies.is-scrolled .portal-copy {
   position: absolute;
@@ -527,15 +527,25 @@ body.has-entered .header {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  opacity: calc(1 - var(--abs-distance) * 2.2);
-  transform: scale(calc(1 - var(--abs-distance) * 0.045));
-  filter: blur(calc(var(--abs-distance) * 14px));
-  will-change: opacity, transform, filter;
+  
+  /* Transitional baseline */
+  opacity: 0;
+  filter: blur(14px);
+  transform: scale(0.955);
   pointer-events: none;
-  transition: filter 120ms ease-out;
+  
+  /* Smooth hardware-accelerated curves */
+  transition: 
+    opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform, filter;
 }
 
 .portal-copies.is-scrolled .portal-copy.is-active {
+  opacity: 1;
+  filter: blur(0px);
+  transform: scale(1);
   pointer-events: auto;
 }
 
@@ -545,13 +555,27 @@ body.has-entered .header {
   align-items: center;
   gap: 12px;
   margin-bottom: clamp(20px, 3vh, 36px);
-  opacity: calc(1 - var(--abs-distance) * 3);
-  will-change: opacity;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: 
+    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.portal-copies.is-scrolled .portal-copy.is-active .gate-eyebrow-container {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .portal-copies.is-scrolled .portal-copy .split-text-title {
-  letter-spacing: calc(0.18em + var(--abs-distance) * 0.08em);
-  transition: letter-spacing 120ms ease-out;
+  letter-spacing: 0.26em; /* Elegant wider tracking when inactive */
+  transition: letter-spacing 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: letter-spacing;
+}
+
+.portal-copies.is-scrolled .portal-copy.is-active .split-text-title {
+  letter-spacing: 0.18em; /* Gathers beautifully together on active */
 }
 
 .portal-copies.is-scrolled .portal-copy .char {
@@ -561,13 +585,31 @@ body.has-entered .header {
 }
 
 .portal-copies.is-scrolled .portal-copy .gate-description {
-  opacity: calc(1 - var(--abs-distance) * 3.5);
-  will-change: opacity;
+  opacity: 0;
+  transform: scale(0.985);
+  transition: 
+    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.portal-copies.is-scrolled .portal-copy.is-active .gate-description {
+  opacity: 0.78;
+  transform: scale(1);
 }
 
 .portal-copies.is-scrolled .portal-copy .ritual-button {
-  opacity: calc(1 - var(--abs-distance) * 4);
-  will-change: opacity;
+  opacity: 0;
+  transform: scale(0.975);
+  transition: 
+    opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.portal-copies.is-scrolled .portal-copy.is-active .ritual-button {
+  opacity: 1;
+  transform: scale(1);
 }
 
 
