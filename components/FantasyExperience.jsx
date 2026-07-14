@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, Fragment } from "react";
 import { createWebGLScene } from "../lib/webgl";
 
 const palettes = [
@@ -14,44 +14,44 @@ const palettes = [
 const gates = [
   {
     number: "01",
-    title: "The Realm",
-    jpTitle: "1-5  領域・風土",
-    description: "Walk the wind-cut kingdoms and explore our high-fidelity digital terrains beyond the first gate.",
-    action: "Cross into the realm",
-    id: "realm"
+    category: "Movie",
+    title: "warriors of the future",
+    client: "Sony",
+    action: "Watch film",
+    id: "movie"
   },
   {
     number: "02",
-    title: "Chronicles",
-    jpTitle: "2-5  石碑・年代記",
-    description: "Discover deep cinematic lore and stories carried in ancient stone, salt, and neural starlight.",
-    action: "Open the chronicles",
-    id: "chronicles"
+    category: "Commercial",
+    title: "WeLend",
+    client: "BoC",
+    action: "View campaign",
+    id: "commercial"
   },
   {
     number: "03",
-    title: "Wayfarers",
-    jpTitle: "3-5  旅人・群像",
-    description: "Meet the unique figures, virtual actors, and lifelike characters whose choices shaped the passage.",
-    action: "Meet the wayfarers",
-    id: "wayfarers"
+    category: "Trailer",
+    title: "Chinese Mummy",
+    client: "Museum",
+    action: "Play trailer",
+    id: "trailer"
   },
   {
     number: "04",
-    title: "Makers",
-    jpTitle: "4-5  工房・創作者",
-    description: "Discover the procedural crafts, mechanical designs, and AI-driven workshop behind our digital sagas.",
-    action: "Enter the workshop",
-    id: "makers"
+    category: "MV",
+    title: "defeat 99",
+    client: "Warner",
+    action: "Watch video",
+    id: "mv"
   },
   {
     number: "05",
-    title: "The Circle",
-    jpTitle: "5-5  円環・共同体",
-    description: "Enter a high-end digital gathering place built for global readers, wanderers, and dreamers.",
-    action: "Join the circle",
-    id: "circle"
-  },
+    category: "IP Creation",
+    title: "KooLoo",
+    client: "OneCool",
+    action: "Explore IP",
+    id: "ip-creation"
+  }
 ];
 
 const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
@@ -87,9 +87,9 @@ export default function FantasyExperience() {
   const videoUrls = [
     "https://video.henrywithu.com/static/streaming-playlists/hls/896cd5b6-7fa0-4572-82f4-e1db152d551a/c9cfe856-61ee-47cd-b013-5083425c188e-1080-fragmented.mp4",
     "https://video.henrywithu.com/static/streaming-playlists/hls/29f2ce85-ad8e-410a-a58d-b3ed37b889f4/7280e8b3-a01b-4fd4-80ac-07728d10d80b-1080-fragmented.mp4",
-    "https://video.henrywithu.com/static/streaming-playlists/hls/0bf2716c-1906-44b5-9ea8-e2e896fad215/00d4b62b-64fa-4fc9-84fe-1f7211b9cad8-1080-fragmented.mp4",
-    "https://video.henrywithu.com/static/streaming-playlists/hls/a8f069de-7cb5-433f-927f-7f589a525afa/5b36ebc1-4e1f-486d-9893-bc1d81d1960e-1080-fragmented.mp4",
-    "https://video.henrywithu.com/static/streaming-playlists/hls/00385dfd-6549-4d12-9e9e-ae59d6da6bdc/a56317f4-84a0-4580-bdc5-8718d49bff49-1080-fragmented.mp4"
+    "https://video.henrywithu.com/static/streaming-playlists/hls/c6be1e61-bfed-4d50-9f21-869564a6d2a6/2a7e0ce2-4d85-4108-b8d0-0962a0df26f2-1080-fragmented.mp4",
+    "https://video.henrywithu.com/static/streaming-playlists/hls/34c2635f-34a7-4049-a3df-9f5b2dbbe452/ad4c7ee5-80f1-4a50-be62-0e0954a0efb4-1080-fragmented.mp4",
+    "https://video.henrywithu.com/static/streaming-playlists/hls/5446fe30-dde0-4b0b-bcce-bd03398f17c3/b784d94e-23f5-4cb8-9027-71910bc031b5-1080-fragmented.mp4"
   ];
 
   const [activeScene, setActiveScene] = useState(0);
@@ -554,28 +554,43 @@ export default function FantasyExperience() {
                   key={gate.id}
                 >
                   <div className="gate-eyebrow-container">
-                    <p className="gate-number">Gate {gate.number}</p>
-                    <span className="gate-jp">{gate.jpTitle}</span>
+                    <span className="gate-category">{gate.category}</span>
                   </div>
                   <h2 className="split-text-title">
-                    {gate.title.split("").map((char, charIdx) => {
-                      if (char === " ") {
-                        return (
-                          <span key={charIdx} className="space">
-                            &nbsp;
-                          </span>
-                        );
-                      }
+                    {gate.title.split(" ").map((word, wordIdx, wordsArr) => {
+                      const precedingText = wordsArr.slice(0, wordIdx).join(" ");
+                      const startIdx = precedingText ? precedingText.length + 1 : 0;
+
                       return (
-                        <span key={charIdx} className="char-wrap">
-                          <span className="char" style={{ animationDelay: `${charIdx * 0.025}s` }}>
-                            {char}
+                        <Fragment key={wordIdx}>
+                          <span className="word-wrap">
+                            {word.split("").map((char, charIdx) => {
+                              const globalCharIdx = startIdx + charIdx;
+                              return (
+                                <span key={charIdx} className="char-wrap">
+                                  <span className="char" style={{ animationDelay: `${globalCharIdx * 0.025}s` }}>
+                                    {char}
+                                  </span>
+                                </span>
+                              );
+                            })}
                           </span>
-                        </span>
+                          {wordIdx < wordsArr.length - 1 && (
+                            <span className="space" aria-hidden="true">&nbsp;</span>
+                          )}
+                        </Fragment>
                       );
                     })}
                   </h2>
-                  <p className="gate-description">{gate.description}</p>
+                  <div className="gate-description gate-client-info">
+                    <div className="gate-client-logo-wrapper">
+                      <img
+                        src={`/assets/logos/${index + 1}.png`}
+                        alt={gate.client}
+                        className="gate-client-logo"
+                      />
+                    </div>
+                  </div>
                   <a className="ritual-button" href={`#${gate.id}`}><span>{gate.action}</span></a>
                 </article>
               ))}
@@ -586,15 +601,21 @@ export default function FantasyExperience() {
               <span>{String(activeScene + 1).padStart(2, "0")}</span> / 05
             </p>
           </div>
-          <div className="scroll-space" aria-hidden="true" />
+          <div className="scroll-space" aria-hidden="true">
+            <div className="snap-point" />
+            <div className="snap-point" />
+            <div className="snap-point" />
+            <div className="snap-point" />
+            <div className="snap-point" />
+          </div>
         </section>
 
         <div className="semantic-sections sr-only">
-          <section id="realm"><h2>The Realm</h2><p>Walk the wind-cut kingdoms beyond the first gate.</p></section>
-          <section id="chronicles"><h2>Chronicles</h2><p>Stories carried in stone, salt, and starlight.</p></section>
-          <section id="wayfarers"><h2>Wayfarers</h2><p>Meet the figures whose choices shaped the passage.</p></section>
-          <section id="makers"><h2>Makers</h2><p>Discover the craft behind the world and its myths.</p></section>
-          <section id="circle"><h2>The Circle</h2><p>A gathering place for readers, wanderers, and dreamers.</p></section>
+          <section id="movie"><h2>Warriors of the Future</h2><p>Category: Movie, Client: Sony</p></section>
+          <section id="commercial"><h2>WeLend</h2><p>Category: Commercial, Client: BoC</p></section>
+          <section id="trailer"><h2>Chinese Mummy</h2><p>Category: Trailer, Client: Museum</p></section>
+          <section id="mv"><h2>Defeat 99</h2><p>Category: MV, Client: Warner</p></section>
+          <section id="ip-creation"><h2>KooLoo</h2><p>Category: IP Creation, Client: OneCool</p></section>
         </div>
       </main>
     </div>

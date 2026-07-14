@@ -18,6 +18,7 @@
 html {
   background: var(--ink);
   scroll-behavior: auto;
+  scroll-snap-type: y mandatory;
 }
 
 body {
@@ -395,8 +396,8 @@ body.has-entered .header {
 .stage__wash {
   display: block;
   z-index: 2;
-  background: radial-gradient(circle at center, rgba(15, 15, 15, 0.25) 0%, rgba(8, 8, 8, 0.6) 100%),
-              linear-gradient(to bottom, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.55) 100%);
+  background: radial-gradient(circle at center, rgba(8, 8, 8, 0.45) 0%, rgba(5, 5, 5, 0.75) 100%),
+              linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.7) 100%);
   pointer-events: none;
 }
 
@@ -639,13 +640,68 @@ body.has-entered .header {
   transition: color 500ms ease;
 }
 
-.gate-jp {
-  font-family: 'Noto Serif TC', serif;
-  font-size: 12px;
-  font-weight: 300;
-  letter-spacing: 0.22em;
-  color: rgba(246, 238, 223, 0.45);
+.gate-category {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  color: rgba(246, 238, 223, 0.55);
   text-transform: uppercase;
+  border: 1px solid rgba(246, 238, 223, 0.15);
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(4px);
+  transition: all 400ms ease;
+}
+
+.portal-copy.is-active .gate-category {
+  border-color: var(--accent);
+  color: #f6eedf;
+}
+
+.gate-client-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: rgba(246, 238, 223, 0.5);
+  margin-top: clamp(8px, 1.5vh, 16px);
+  margin-bottom: clamp(16px, 2.5vh, 32px);
+  justify-content: center;
+}
+
+.gate-client-logo-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(240px, 25vw, 450px); /* Generous horizontal safe zone */
+  height: clamp(70px, 8vh, 100px); /* Generous vertical safe zone */
+  position: relative;
+  vertical-align: middle;
+}
+
+.gate-client-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Perfect scale preservation */
+  transform: scale(2.2); /* Overcomes the massive blank borders in the uncropped source images */
+  opacity: 0.8; /* Elegant base opacity */
+  transition: all 500ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.portal-copy.is-active .gate-client-logo {
+  opacity: 1; /* Vibrant active color */
+  transform: scale(2.5); /* Luxurious active state zoom response */
+}
+
+.word-wrap {
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .split-text-title {
@@ -659,10 +715,10 @@ body.has-entered .header {
   line-height: 1.1;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #dfba92; /* High-end muted champagne gold instead of pure yellow */
+  color: #FFC627; /* Official Pantone 123C Yellow brand color */
   text-shadow: 
-    0 4px 20px rgba(223, 186, 146, 0.12),
-    0 2px 4px rgba(0, 0, 0, 0.5);
+    0 4px 20px rgba(255, 198, 39, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.6);
 }
 
 .char-wrap {
@@ -850,6 +906,13 @@ body.has-entered .header {
 
 .scroll-space {
   height: 500svh;
+}
+
+.snap-point {
+  height: 100svh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  pointer-events: none;
 }
 
 noscript {
